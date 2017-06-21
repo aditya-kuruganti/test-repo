@@ -1,0 +1,16 @@
+{
+	"operationId" : "911",
+	"transactionCode" : "2000405",
+	"result" : "0",
+	"givexTransactionReference" : "0.00",
+	"errorMessage" : null,
+  "pointsAdded" : "32.21",
+  "pointsBalance" : "12.45",
+  "certificateBalance" : "12.45",
+  "memberName" : "",
+  "receiptMessage" : "",
+  "discountAmount" : "12.34",
+	"isoSerial" : "633780-28219529",
+	"unitBalance" : "45.43",
+  "loyaltyBalance" : "45.67"
+}

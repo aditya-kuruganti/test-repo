@@ -1,0 +1,20 @@
+{
+	"operationId" : "909",
+	"transactionCode" : "2000405",
+	"result" : "0",
+	"certificationBalance" : "0.00",
+	"errorMessage" : null,
+  "pointsBalance" : "12.45",
+  "certificateExpirationDate" : "2016-01-01",
+	"currencyCode" : "GBP",
+  "memberName" : "",
+  "receipMessage" : "",
+  "loyaltyBalance" : "",
+  "memberTier" : "",
+	"isoSerial" : "633780-28219529",
+	"balanceAsOfEffectiveDate" : "",
+  "effectiveDate" : "",
+  "activatingCurrencyCode" : "",
+  "operatorMessage" : "",
+  "lockedAmount" : "123.45"
+}

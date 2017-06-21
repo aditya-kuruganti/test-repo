@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "operationId": {
+      "type": "string"
+    },
+    "transactionCode": {
+      "type": "string"
+    },
+    "result": {
+      "type": "string"
+    },
+    "certificationBalance": {
+      "type": "string"
+    },
+    "errorMessage": {
+      "type": "null"
+    },
+    "currencyCode": {
+      "type": "string"
+    },
+    "verifyResponse": {
+      "type": "string"
+    },
+    "receiptMessage": {
+      "type": "string"
+    },
+    "isoSerial": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "operationId",
+    "transactionCode",
+    "result",
+    "certificationBalance",
+    "currencyCode",
+    "verifyResponse",
+    "isoSerial"
+  ]
+}

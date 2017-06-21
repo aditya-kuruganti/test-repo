@@ -1,0 +1,132 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "operationId": {
+      "type": "string"
+    },
+    "languageCode": {
+      "type": "string"
+    },
+    "transactionCode": {
+      "type": "string"
+    },
+    "userId": {
+      "type": "string"
+    },
+    "passWord": {
+      "type": "string"
+    },
+    "givexNumber ": {
+      "type": "string"
+    },
+    "customerType": {
+      "type": "string"
+    },
+    "customerLogin": {
+      "type": "string"
+    },
+    "customerTitle": {
+      "type": "string"
+    },
+    "customerFirstName": {
+      "type": "string"
+    },
+    "customerMiddleName": {
+      "type": "string"
+    },
+    "customerLastName": {
+      "type": "string"
+    },
+    "customerGender": {
+      "type": "string"
+    },
+    "customerBirthdate": {
+      "type": "string"
+    },
+    "customerAddress": {
+      "type": "string"
+    },
+    "customerAddress2": {
+      "type": "string"
+    },
+    "customerCity": {
+      "type": "string"
+    },
+    "customerProvince": {
+      "type": "string"
+    },
+    "customerCounty": {
+      "type": "string"
+    },
+    "customerCountry": {
+      "type": "string"
+    },
+    "customerPostalCode": {
+      "type": "string"
+    },
+    "customerPhone": {
+      "type": "string"
+    },
+    "customerDiscount": {
+      "type": "string"
+    },
+    "promotionOptIn": {
+      "type": "string"
+    },
+    "customerEmail": {
+      "type": "string"
+    },
+    "customerPassword": {
+      "type": "string"
+    },
+    "customerMobile": {
+      "type": "string"
+    },
+    "customerCompany": {
+      "type": "string"
+    },
+    "securityCode": {
+      "type": "string"
+    },
+    "newCardRequest": {
+      "type": "string"
+    },
+    "promotionOptInMail": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "operationId",
+    "languageCode",
+    "transactionCode",
+    "userId",
+    "password",
+    "givexNumber",
+    "customerType",
+    "customerLogin",
+    "customerTitle",
+    "customerFirstName",
+    "customerMiddleName",
+    "customerLastName",
+    "customerGender",
+    "customerBirthdate",
+    "customerAddress",
+    "customerAddress2",
+    "customerCity",
+    "customerProvince",
+    "customerCounty",
+    "customerCountry",
+    "customerPostalCode",
+    "customerPhone",
+    "customerDiscount",
+    "promotionOptIn",
+    "customerEmail",
+    "customerPassword",
+    "customerMobile",
+    "customerCompany",
+    "securityCode",
+    "newCardRequest",
+    "promotionOptInMail"
+  ]
+}

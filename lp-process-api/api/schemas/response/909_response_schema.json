@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "operationId": {
+      "type": "string"
+    },
+    "transactionCode": {
+      "type": "string"
+    },
+    "result": {
+      "type": "string"
+    },
+    "certificationBalance": {
+      "type": "string"
+    },
+    "errorMessage": {
+      "type": "null"
+    },
+    "pointsBalance": {
+      "type": "string"
+    },
+    "certificateExpirationDate": {
+      "type": "string"
+    },
+    "currencyCode": {
+      "type": "string"
+    },
+    "memberName": {
+      "type": "string"
+    },
+    "receiptMessage": {
+      "type": "string"
+    },
+    "loyaltyBalance": {
+      "type": "string"
+    },
+    "memberTier": {
+      "type": "string"
+    },
+    "isoSerial": {
+      "type": "string"
+    },
+    "balanceAsofEffectiveDate": {
+      "type": "string"
+    },
+    "effectiveDate": {
+      "type": "string"
+    },
+    "activatingCurrencyCode": {
+      "type": "string"
+    },
+    "operatorMessage": {
+      "type": "string"
+    },
+    "lockedAmount": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "operationId",
+    "transactionCode",
+    "result",
+    "certificationBalance",
+    "pointsBalance",
+    "certificateExpirationDate",
+    "currencyCode",
+    "isoSerial",
+    "activatingCurrencyCode",
+    "operatorMessage"
+  ]
+}

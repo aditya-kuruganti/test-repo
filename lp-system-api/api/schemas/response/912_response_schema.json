@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "operationId": {
+      "type": "string"
+    },
+    "transactionCode": {
+      "type": "string"
+    },
+    "result": {
+      "type": "string"
+    },
+    "givexTransactionReference": {
+      "type": "string"
+    },
+    "errorMessage": {
+      "type": "null"
+    },
+    "pointsBalance": {
+      "type": "string"
+    },
+    "certificateBalance": {
+      "type": "string"
+    },
+    "memberName": {
+      "type": "string"
+    },
+    "receiptMessage": {
+      "type": "string"
+    },
+    "isoSerial": {
+      "type": "string"
+    },
+    "rewardReference": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "operationId",
+    "transactionCode",
+    "result",
+    "givexTransactionReference",
+    "errorMessage",
+    "pointsBalance",
+    "certificateBalance",
+    "memberName",
+    "isoSerial"
+  ]
+}

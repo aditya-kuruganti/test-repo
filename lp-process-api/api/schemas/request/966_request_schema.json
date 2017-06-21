@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "operationId": {
+      "type": "string"
+    },
+    "languageCode": {
+      "type": "string"
+    },
+    "transactionCode": {
+      "type": "string"
+    },
+    "userId": {
+      "type": "string"
+    },
+    "givexNumber": {
+      "type": "string"
+    },
+    "serialNumber": {
+      "type": "string"
+    },
+    "cardIso": {
+      "type": "string"
+    },
+    "historyType": {
+      "type": "string"
+    },
+    "startDate": {
+      "type": "string"
+    },
+    "endDate": {
+      "type": "string"
+    },
+    "transactionType": {
+      "type": "string"
+    },
+    "additionalData": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "operationId",
+    "languageCode",
+    "transactionCode",
+    "userId",
+    "givexNumber",
+    "serialNumber",
+    "cardIso",
+    "historyType"
+  ]
+}

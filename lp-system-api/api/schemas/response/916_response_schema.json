@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "operationId": {
+      "type": "string"
+    },
+    "transactionCode": {
+      "type": "string"
+    },
+    "result": {
+      "type": "string"
+    },
+    "operatorId": {
+      "type": "string"
+    },
+    "terminalId": {
+      "type": "string"
+    },
+    "continuation": {
+      "type": "string"
+    },
+    "reportLine": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "operationId",
+    "transactionCode",
+    "result",
+    "operatorId",
+    "terminalId",
+    "continuation",
+    "reportLine"
+  ]
+}

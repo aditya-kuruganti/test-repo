@@ -1,0 +1,11 @@
+{
+  "operationId": "949",
+  "languageCode": "en",
+  "transactionCode": "69",
+  "userId": "1:25",
+  "password": "1234:4321",
+  "customerLogin": "10111",
+  "customerPassword": "xxxx",
+  "cardISO" : "1212",
+  "serialNumber" : "123"
+}

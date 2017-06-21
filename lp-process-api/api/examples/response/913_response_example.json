@@ -1,0 +1,13 @@
+{
+	"operationId" : "913",
+	"transactionCode" : "2000405",
+	"result" : "0",
+	"givexTransactionReference" : "0.00",
+	"errorMessage" : null,
+  	"certificateBalance" : "12.45",
+  	"pointsCancelled" : "100",
+  	"pointsBalance" : "200",
+  	"memberName" : "",
+	"isoSerial" : "633780-28219529",
+	"receiptMessage" : ""
+}

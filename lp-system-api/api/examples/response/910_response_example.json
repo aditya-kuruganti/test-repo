@@ -1,0 +1,18 @@
+{
+	"operationId" : "910",
+	"transactionCode" : "2000405",
+	"result" : "0",
+	"givexTransactionReferenceTo" : "0.00",
+	"errorMessage" : null,
+  	"certificateBalance" : "12.45",
+  	"certificateExpirationDate" : "",
+  	"receiptMessage" : "",
+  	"givexPointsTransactionReferenceTo" : "",
+  	"pointsBalance" : "",
+  	"securityCode" : "",
+	"isoSerialFrom" : "633780-28219529",
+	"currencyCode" : "",
+	"isoSerialTo" : "633780-28219529",
+	"givexTransactionReferenceFrom" : "0.00",
+	"givexPointsTransactionReferenceFrom" : "34.23"
+}

@@ -1,0 +1,11 @@
+{
+	"operationId" : "908",
+	"transactionCode" : "2000405",
+	"result" : "0",
+	"givexTransactionReference" : "0.00",
+	"errorMessage" : null,
+  	"certificateBalance" : "12.45",
+  	"certificateExpirationDate" : "",
+  	"receiptMessage" : "",
+	"isoSerial" : "633780-28219529"
+}

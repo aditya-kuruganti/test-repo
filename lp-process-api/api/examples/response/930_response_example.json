@@ -1,0 +1,10 @@
+{
+	"operationId" : "930",
+	"transactionCode" : "2000405",
+	"result" : "0",
+	"givexTransactionReference":"0.00",
+	"certificateBalance" : "0.00",
+	"errorMessage" : null,
+	"pointsBalance" : "453",
+ 	"isoSerial" : "633780-28219529"
+}

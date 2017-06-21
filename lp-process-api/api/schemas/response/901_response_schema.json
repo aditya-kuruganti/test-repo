@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "operationId": {
+      "type": "string"
+    },
+    "transactionCode": {
+      "type": "string"
+    },
+    "result": {
+      "type": "string"
+    },
+    "givexTransactionReference": {
+      "type": "string"
+    },
+    "errorMessage": {
+      "type": "null"
+    },
+    "certificateBalance": {
+      "type": "string"
+    },
+    "certificateExpirationDate": {
+      "type": "string"
+    },
+    "receiptMessage": {
+      "type": "string"
+    },
+    "pointsAdded": {
+      "type": "string"
+    },
+    "pointsBalance": {
+      "type": "string"
+    },
+    "discountAmount": {
+      "type": "string"
+    },
+    "isoSerial": {
+      "type": "string"
+    },
+    "couponReference": {
+      "type": "string"
+    },
+    "cashRewardReference": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "operationId",
+    "transactionCode",
+    "result",
+    "givexTransactionReference",
+    "errorMessage",
+    "certificateBalance",
+    "certificateExpirationDate",
+    "isoSserial",
+    "couponReference",
+    "cashRewardReference"
+  ]
+}

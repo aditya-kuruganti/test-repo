@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "operationId": {
+      "type": "string"
+    },
+    "languageCode": {
+      "type": "string"
+    },
+    "transactionCode": {
+      "type": "string"
+    },
+    "userId": {
+      "type": "string"
+    },
+    "password": {
+      "type": "string"
+    },
+    "customerLogin": {
+      "type": "string"
+    },
+    "customerPassword": {
+      "type": "string"
+    },
+    "newPassword": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "operationId",
+    "languageCode",
+    "transactionCode",
+    "userId",
+    "password",
+    "customerLogin",
+    "customerPassword",
+    "newPassword"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "operationId": {
+      "type": "string"
+    },
+    "languageCode": {
+      "type": "string"
+    },
+    "transactionCode": {
+      "type": "string"
+    },
+    "userId": {
+      "type": "string"
+    },
+    "password": {
+      "type": "string"
+    },
+    "reportType": {
+      "type": "string"
+    },
+    "cashoutId": {
+      "type": "string"
+    },
+    "operatorId": {
+      "type": "string"
+    },
+    "terminalId": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "operationId",
+    "languageCode",
+    "transactionCode",
+    "userId",
+    "password",
+    "reportType",
+    "cashoutId",
+    "operatorId",
+    "terminalId"
+  ]
+}

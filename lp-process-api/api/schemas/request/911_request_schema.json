@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "operationId": {
+      "type": "string"
+    },
+    "languageCode": {
+      "type": "string"
+    },
+    "transactionCode": {
+      "type": "string"
+    },
+    "userId": {
+      "type": "string"
+    },
+    "password": {
+      "type": "string"
+    },
+    "givexNumber": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "string"
+    },
+    "units": {
+      "type": "string"
+    },
+    "promoCode": {
+      "type": "string"
+    },
+    "SKU": {
+      "type": "string"
+    },
+    "bonusPoints": {
+      "type": "string"
+    },
+    "customerLogin": {
+      "type": "string"
+    },
+    "customerPassword": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "operationId",
+    "languageCode",
+    "transactionCode",
+    "userId",
+    "password",
+    "givexNumber",
+    "amount",
+    "units",
+    "promoCode"
+  ]
+}

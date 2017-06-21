@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "operationId": {
+      "type": "string"
+    },
+    "transactionCode": {
+      "type": "string"
+    },
+    "result": {
+      "type": "string"
+    },
+    "givexTransactionReference": {
+      "type": "string"
+    },
+    "givexNumber": {
+      "type": "string"
+    },
+    "certificateBalance": {
+      "type": "string"
+    },
+    "certificateExpirationDate": {
+      "type": "string"
+    },
+    "receiptMessage": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "operationId",
+    "transactionCode",
+    "result",
+    "givexTransactionReference",
+    "givexNumber",
+    "certificateBalance",
+    "certificateExpirationDate"
+  ]
+}

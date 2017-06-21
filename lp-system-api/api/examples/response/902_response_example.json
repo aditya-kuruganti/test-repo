@@ -1,0 +1,17 @@
+{
+	"operationId" : "902",
+	"transactionCode" : "2000405",
+	"result" : "0",
+	"givexTransactionReference" : "0.00",
+	"errorMessage" : null,
+	"amountRedeemed" : "23.23",
+  	"certificateBalance" : "12.45",
+  	"certificateExpirationDate" : "",
+  	"receiptMessage" : "",
+  	"pointsAdded" : "",
+  	"pointsBalance" : "",
+  	"discountAmount" : "",
+	"isoSerial" : "633780-28219529",
+	"couponReference" : "",
+	"cashRewardReference" : ""
+}

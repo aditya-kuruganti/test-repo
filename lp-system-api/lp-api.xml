@@ -1,0 +1,1175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:inspect="http://www.mulesoft.org/schema/mule/inspect" xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting" xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/inspect http://www.mulesoft.org/schema/mule/inspect/current/mule-inspect.xsd
+http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+    <flow name="lp-pos-api-main" >
+        <http:listener config-ref="lp-api-httpListenerConfig" path="/api/*" doc:name="HTTP" />
+        <logger level="INFO" doc:name="Logger" message="@OUTAGE@ Before Routing .... At API kit Router" />
+        <apikit:router config-ref="lp-api-config" doc:name="APIkit Router" />
+        <exception-strategy ref="lp-pos-api-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p909:lp-api-config" processingStrategy="synchronous">
+<!--         <flow-ref name="common-logger-entry-Sub_Flow" doc:name="common-logger-entry-Sub_Flow" /> -->
+<logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+<logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_909 : #[message.inboundProperties.lp_correlation_id] " />
+
+        <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p909:lp-api-config" />
+            <add-message-property key="transactionCode" value="#[payload.transactionCode]"/>
+            <add-message-property key="userId" value="#[payload.userId]"/>
+            <add-message-property key="operationId" value="#[payload.operationId]"/>
+            <add-message-property key="givexNumber" value="#[payload.givexNumber]"/>
+            <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+
+        </message-properties-transformer>
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+        <logger message="Before HTTP : #[payload] " level="INFO" doc:name="Logger" />
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_909 : #[message.inboundProperties.lp_correlation_id] " />
+        
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.balanceinquiry.path}" method="POST" doc:name="HTTP - Call process service bal inquiry">
+
+            <http:success-status-code-validator values="0..599" />
+        </http:request>
+        <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties['lp_correlation_id']]" doc:name="lp_correlation_id"/>
+         <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_909 : #[message.inboundProperties.lp_correlation_id] " />
+       
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p911:lp-api-config" processingStrategy="synchronous">
+<logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+<logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_911 : #[message.inboundProperties.lp_correlation_id] " />
+
+<json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p911:lp-api-config" />
+            <add-message-property key="promoCode" value="#[payload.promoCode]" />
+            <add-message-property key="sku" value="#[payload.sku]" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+
+        <choice doc:name="Choice">
+            <when expression="#[message.outboundProperties.promoCode != &quot;999&quot;]">
+             <json:object-to-json-transformer doc:name="Object to JSON"/>
+             <logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services points issuance PROD_OUT_2_911 : #[message.inboundProperties.lp_correlation_id] " />
+        
+                <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.completion.path}" method="POST" doc:name="HTTP - Call process service completion">
+                    
+                </http:request>
+                 <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+                    <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_911 : #[message.inboundProperties.lp_correlation_id] " />
+     
+            </when>
+            <otherwise>
+          <json:object-to-json-transformer doc:name="Object to JSON"/>
+          <logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services manual points correction PROD_OUT_2_911 : #[message.inboundProperties.lp_correlation_id] " />
+        
+                <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.pointscorrection.path}" method="POST" doc:name="HTTP - Call process service Points Correction">
+                    
+                </http:request>
+                 <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+                    <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_911 : #[message.inboundProperties.lp_correlation_id] " />
+     
+            </otherwise>
+        </choice>
+       
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p928:lp-api-config" processingStrategy="synchronous">
+<logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+<logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_928 : #[message.inboundProperties.lp_correlation_id]" />
+
+<json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p928:lp-api-config" />
+            <add-message-property key="userId" value="#[payload.userId]" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+        <logger message="Before HTTP Call: #[payload]" level="INFO" doc:name="Logger" />
+        
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_928 : #[message.inboundProperties.lp_correlation_id]" />
+        
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.userauthenticate.path}" method="POST" doc:name="HTTP - Call process service userauthenticate">
+            <http:request-builder>
+                <http:header headerName="Content-Type" value="application/json" />
+            </http:request-builder>
+        </http:request>
+         <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+     <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_928 : #[message.inboundProperties.lp_correlation_id]" />
+     
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p912:lp-api-config" processingStrategy="synchronous">
+       <logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+       <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_912 : #[message.inboundProperties.lp_correlation_id]" />
+       
+       <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+           <add-message-property key="userId" value="#[payload.userId]" /> 
+             <add-message-property key="transactionCode" value="#[payload.transactionCode]" /> 
+             <add-message-property key="givexNumber" value="#[payload.givexNumber]" /> 
+                 <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+             
+         </message-properties-transformer> 
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+       
+        <logger message="Before HTTP 912 : #[payload]" level="INFO" doc:name="Logger" />
+        
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+         <logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_912 : #[message.inboundProperties.lp_correlation_id]" />
+       
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.redemption.path}" method="POST" doc:name="HTTP - Call process service redemption">
+            <http:request-builder>
+                <http:header headerName="Content-Type" value="application/json" />
+            </http:request-builder>
+        </http:request>
+         <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+         <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_912 : #[message.inboundProperties.lp_correlation_id]" />
+    
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p949:lp-api-config" processingStrategy="synchronous">
+        <logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+          <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_949 : #[message.inboundProperties.lp_correlation_id]" />
+     
+        <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p949:lp-api-config" />
+            <add-message-property key="userId" value="#[payload.userId]" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+         <logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_949 : #[message.inboundProperties.lp_correlation_id]" />
+       
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.blockIdentifier.path}" method="POST" doc:name="HTTP - Call process service block Identifier" />
+        <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+         <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_949 : #[message.inboundProperties.lp_correlation_id]" />
+       
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p946:lp-api-config" processingStrategy="synchronous">
+        <logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+          <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_946 : #[message.inboundProperties.lp_correlation_id]" />
+     
+        <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p946:lp-api-config" />
+            <add-message-property key="userId" value="#[payload.userId]" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_946 : #[message.inboundProperties.lp_correlation_id]" />
+        
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.createNewAccount.path}" method="POST" doc:name="HTTP - Call process service enroll" />
+        <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_946 : #[message.inboundProperties.lp_correlation_id]" />
+         <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+        <logger message="Payload: #[payload]" level="INFO" doc:name="Logger" />
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p950:lp-api-config" processingStrategy="synchronous">
+        <logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+          <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_950 : #[message.inboundProperties.lp_correlation_id]" />
+     
+        <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p950:lp-api-config" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_950 : #[message.inboundProperties.lp_correlation_id]" />
+        
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.getAccount.path}" method="POST" doc:name="HTTP - Call process service get account" />
+        <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_950 : #[message.inboundProperties.lp_correlation_id]" />
+         <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p966:lp-api-config" processingStrategy="synchronous">
+        <logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+          <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_966 : #[message.inboundProperties.lp_correlation_id]" />
+     
+        <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p966:lp-api-config" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+<logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_966 : #[message.inboundProperties.lp_correlation_id]" />
+
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.getTransactions.path}" method="POST" doc:name="HTTP - Call process service get transactions" />
+   <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_966 : #[message.inboundProperties.lp_correlation_id]" />
+    <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p954:lp-api-config" processingStrategy="synchronous">
+        <logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+          <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_954 : #[message.inboundProperties.lp_correlation_id]" />
+     
+       <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p954:lp-api-config" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        
+       <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+<!--         <json:json-to-object-transformer doc:name="JSON to Object" returnClass="java.lang.String"/>  -->
+<logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_954 : #[message.inboundProperties.lp_correlation_id]" />
+
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.resetpassword.path}" method="POST" doc:name="HTTP - Call process service reset password" />
+      <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_954 : #[message.inboundProperties.lp_correlation_id]" />
+       <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p953:lp-api-config" processingStrategy="synchronous">
+        <logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+          <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_953 : #[message.inboundProperties.lp_correlation_id]" />
+     
+<json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/> 
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p953:lp-api-config" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+ <json:object-to-json-transformer doc:name="Object to JSON"/>
+ <logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_953 : #[message.inboundProperties.lp_correlation_id]" />
+ 
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.changepassword.logged.path}" method="POST" doc:name="HTTP - Call process service change password" />
+     <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_953 : #[message.inboundProperties.lp_correlation_id]" />
+      <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p901:lp-api-config" processingStrategy="synchronous">
+        <logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+          <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_901 : #[message.inboundProperties.lp_correlation_id]" />
+     
+<!--         <set-session-variable variableName="jsonPayload" value="#[payload]" doc:name="Session Variable"/> -->
+       <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p901:lp-api-config" />
+            <add-message-property key="sku" value="#[payload.sku]" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+         
+        <choice doc:name="Choice">
+            <when expression="#[message.outboundProperties.sku != null &amp;&amp; message.outboundProperties.sku != &quot;&quot;]">
+                <set-session-variable variableName="901Request" value="#[payload]" doc:name="Session Variable" />
+                <!--    <set-session-variable variableName="skuList" value="#[new org.json.JSONArray(message.outboundProperties.sku)]" mimeType="application/json" doc:name="Set SKU Session Variable" />
+              -->
+                <logger level="INFO" doc:name="Logger" />
+
+                 <json:object-to-json-transformer doc:name="Object to JSON"/>
+<logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_901 : #[message.inboundProperties.lp_correlation_id]" />
+
+                <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.inittransaction.path}" method="POST" doc:name="HTTP - Call init Transaction" />
+          <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_901 : #[message.inboundProperties.lp_correlation_id]" />
+ <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+                <set-payload value="#[sessionVars['901Request']]" mimeType="application/json" doc:name="Set Payload" />
+            </when>
+            <otherwise>
+                <logger message="No product details" level="INFO" doc:name="Logger" />
+            </otherwise>
+        </choice>
+<!--         <set-payload value="#[sessionVars.jsonPayload]" doc:name="Set Payload"/> -->
+         <json:object-to-json-transformer doc:name="Object to JSON"/>
+         <logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_901 : #[message.inboundProperties.lp_correlation_id]" />
+         
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.deductcostapay.path}" method="POST" doc:name="HTTP - Call process service deductcostapay" />
+        <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_901 : #[message.inboundProperties.lp_correlation_id]" />
+         <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p993:lp-api-config">
+        <set-payload value="{  &quot;operationId&quot;: &quot;966&quot;,  &quot;transactionCode&quot;: &quot;2000405&quot;,  &quot;result&quot;: &quot;0&quot;,  &quot;certBalance&quot;: &quot;12345&quot;,  &quot;errorMessage&quot;: null,  &quot;pointsBalance&quot;: &quot;123&quot;,  &quot;receiptMessage&quot;:&quot;&quot;,  &quot;isoSerial&quot;: &quot;&quot; }" doc:name="Set Payload" />
+    </flow>
+    <flow name="post:/poscalls/p906:lp-api-config" processingStrategy="synchronous">
+        <logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+          <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_906 : #[message.inboundProperties.lp_correlation_id]" />
+     
+        <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p906:lp-api-config" />
+            <add-message-property key="userId" value="#[payload.userId]" />
+            <add-message-property key="transactionCode" value="#[payload.transactionCode]" />
+            <add-message-property key="givexNumber" value="#[payload.givexNumber]" />
+            <add-message-property key="operationId" value="#[payload.operationId]" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+        <logger message="Before HTTP : #[payload]" level="INFO" doc:name="Logger" />
+         
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+	<logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_906 : #[message.inboundProperties.lp_correlation_id]" />
+	
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.registerIdentifier.path}" method="POST" doc:name="HTTP - Call process service">
+            <http:request-builder>
+                <http:header headerName="Content-Type" value="application/json" />
+            </http:request-builder>
+            <http:success-status-code-validator values="0..599" />
+        </http:request>
+        <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_906 : #[message.inboundProperties.lp_correlation_id]" />
+         <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p908:lp-api-config" processingStrategy="synchronous">
+        <logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+         <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_908 : #[message.inboundProperties.lp_correlation_id]" />
+     
+        <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p908:lp-api-config" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+       
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+<logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_908 : #[message.inboundProperties.lp_correlation_id]" />
+
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.pointscorrection.path}" method="POST" doc:name="HTTP - Call process service for adjustment">
+            <http:request-builder>
+                <http:header headerName="Content-Type" value="application/json" />
+            </http:request-builder>
+        </http:request>
+        <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_908 : #[message.inboundProperties.lp_correlation_id]" />
+         <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p910:lp-api-config" processingStrategy="synchronous">
+        <logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+         <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_910 : #[message.inboundProperties.lp_correlation_id]" />
+     
+<!--         <set-session-variable variableName="jsonPayload" value="#[payload]" doc:name="Session Variable"/> -->
+        <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p910:lp-api-config" />
+            <add-message-property key="userId" value="#[payload.userId]" />
+            <add-message-property key="transactionCode" value="#[payload.transactionCode]" />
+            <add-message-property key="givexNumber" value="#[payload.givexNumber]" />
+            <add-message-property key="promoCode" value="#[payload.promoCode]" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+       <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+         
+        <choice doc:name="Choice">
+            <when expression="#[message.outboundProperties.userId != &quot;${user_id}&quot;]">
+                <logger message="910 - POS call #[message.inboundProperties.lp_correlation_id]" level="INFO" doc:name="Logger" />
+<!--                <set-payload value="#[sessionVars.jsonPayload]" doc:name="Set Payload"/> -->
+ <json:object-to-json-transformer doc:name="Object to JSON"/>         
+ <logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_910 : #[message.inboundProperties.lp_correlation_id]" />
+        
+                <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.replaceCard.path}" method="POST" doc:name="HTTP - Call process service IF 01.16">
+                    <http:request-builder>
+                        <http:header headerName="Content-Type" value="application/json" />
+                    </http:request-builder>
+                </http:request>
+                <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_910 : #[message.inboundProperties.lp_correlation_id]" />
+                 <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+            </when>
+            <otherwise>
+                <logger message="910 - Web Call #[message.inboundProperties.lp_correlation_id]" level="INFO" doc:name="Logger" />
+<!--                 <set-payload value="#[sessionVars.jsonPayload]" doc:name="Set Payload"/> -->
+                 <json:object-to-json-transformer doc:name="Object to JSON"/>
+                 <logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_910 : #[message.inboundProperties.lp_correlation_id]" />
+
+                <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.lostcard.path}" method="POST" doc:name="HTTP - Call Lost Card">
+                    
+                </http:request>
+                <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_910 : #[message.inboundProperties.lp_correlation_id]" />
+                 <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+            </otherwise>
+        </choice>
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p948:lp-api-config" processingStrategy="synchronous">
+        <logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+         <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_948 : #[message.inboundProperties.lp_correlation_id]" />
+     
+       <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p948:lp-api-config" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+       
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+<logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_948 : #[message.inboundProperties.lp_correlation_id]" />
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.getAccount.path}" method="POST" doc:name="HTTP - Call process service get account" />
+    <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_948 : #[message.inboundProperties.lp_correlation_id]" />
+     <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p951:lp-api-config" processingStrategy="synchronous">
+        <logger level="INFO" doc:name="Logger" message="Entry : #[payload]" />
+         <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_951 : #[message.inboundProperties.lp_correlation_id]" />
+     
+       <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p951:lp-api-config" />
+            <add-message-property key="userId" value="#[payload.userId]" />
+            <add-message-property key="transactionCode" value="#[payload.transactionCode]" />
+            <add-message-property key="givexNumber" value="#[payload.givexNumber]" />
+            <add-message-property key="operationId" value="#[payload.operationId]" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+        <logger message="Before HTTP : #[payload]" level="INFO" doc:name="Logger" />
+        
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+<!--         <json:json-to-object-transformer doc:name="JSON to Object" returnClass="java.lang.String"/>  -->
+<logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_951 : #[message.inboundProperties.lp_correlation_id]" />
+
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.registerIdentifier.path}" method="POST" doc:name="HTTP - Call process service registerIdentifier">
+            <http:request-builder>
+                <http:header headerName="Content-Type" value="application/json" />
+            </http:request-builder>
+            <http:success-status-code-validator values="0..599" />
+        </http:request>
+        <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_951 : #[message.inboundProperties.lp_correlation_id]" />
+         <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p952:lp-api-config" processingStrategy="synchronous">
+        <logger level="INFO" doc:name="Logger" message="Entry : #[payload]" />
+         <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_952 : #[message.inboundProperties.lp_correlation_id]" />
+     
+        <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p952:lp-api-config" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+        
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+<!--         <json:json-to-object-transformer doc:name="JSON to Object" returnClass="java.lang.String"/>  -->
+<logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_952 : #[message.inboundProperties.lp_correlation_id]" />
+
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.blockGiftCard.path}" method="POST" doc:name="HTTP - Call process service block Gift Card" />
+    <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_952 : #[message.inboundProperties.lp_correlation_id]" />
+     <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p947:lp-api-config" processingStrategy="synchronous">
+        <logger level="INFO" doc:name="Logger" message="Entry : #[payload]" />
+         <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_947 : #[message.inboundProperties.lp_correlation_id]" />
+     
+        <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p947:lp-api-config" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+        
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+<!--         <json:json-to-object-transformer doc:name="JSON to Object" returnClass="java.lang.String"/>  -->
+<logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_947 : #[message.inboundProperties.lp_correlation_id]" />
+
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.updatecustomerdata.path}" method="POST" doc:name="HTTP - Call process service updatecustomerdata" />
+        <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_947 : #[message.inboundProperties.lp_correlation_id]" />
+         <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p958:lp-api-config" processingStrategy="synchronous">
+        <logger level="INFO" doc:name="Logger" message="Entry : #[payload]" />
+         <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_958 : #[message.inboundProperties.lp_correlation_id]" />
+     
+<!--         <set-session-variable variableName="jsonPayload" value="#[payload]" doc:name="Session Variable"/> -->
+       <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="isWeb" value="#[true]" />
+            <add-message-property key="customerLogin" value="#[payload.customerLogin]" />
+            <add-message-property key="customerPassword" value="#[payload.customerPassword]" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+        <logger message="Before HTTP Call: #[app.registry.customerLogin] and #[app.registry.customerPassword]" level="INFO" doc:name="Logger" />
+<!--        <set-payload value="#[sessionVars.jsonPayload]" doc:name="Set Payload"/> -->
+ <json:object-to-json-transformer doc:name="Object to JSON"/>        
+       <logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_958 : #[message.inboundProperties.lp_correlation_id]" />
+       
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.958.authenticate.path}" method="POST" doc:name="HTTP - Call process service authenticate">
+            <http:request-builder>
+                <http:header headerName="Content-Type" value="application/json" />
+            </http:request-builder>
+        </http:request>
+         <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+        <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_958 : #[message.inboundProperties.lp_correlation_id]" />
+        
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p907:lp-api-config">
+        <logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+        <!-- <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p907:lp-api-config" />
+        </message-properties-transformer>
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.canceltransaction.path}" method="POST" doc:name="HTTP - Call process service updatecustomerdata" />
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+        -->
+        <set-payload value="{  &quot;operationId&quot;: &quot;907&quot;, &quot;transactionCode&quot;: &quot;2000405&quot;,&quot;result&quot;: &quot;0&quot;,&quot;givexTransactionReference&quot;: &quot;xxx&quot;,&quot;errorMessage&quot;: &quot;xxx&quot;,&quot;certificateBalance&quot;: &quot;xxx&quot;,&quot;certificateExpirationDate&quot;: &quot;xxx&quot;,&quot;receiptMessage&quot;:&quot;xxx&quot;,&quot;ISO-serial&quot;: &quot;xxx&quot;  }" doc:name="Set Payload" />
+    </flow>
+    <flow name="post:/poscalls/p915:lp-api-config">
+        <set-payload value="{  &quot;operationId&quot; : &quot;915&quot;,  &quot;transactionCode&quot; : &quot;2000405&quot;,  &quot;result&quot; : &quot;0&quot;,  &quot;cashoutId&quot; : &quot;0.00&quot;,  &quot;errorMessage&quot; : null }" doc:name="Set Payload" />
+    </flow>
+    <flow name="post:/poscalls/p902:lp-api-config" processingStrategy="synchronous">
+        <logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+         <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_902 : #[message.inboundProperties.lp_correlation_id]" />
+     
+<!--         <set-session-variable variableName="jsonPayload" value="#[payload]" doc:name="Session Variable"/> -->
+        <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p902:lp-api-config" />
+            <add-message-property key="sku" value="#[payload.sku]" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+       <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+        
+        <choice doc:name="Choice">
+            <when expression="#[message.outboundProperties.sku != null &amp;&amp; message.outboundProperties.sku != &quot;&quot;]">
+                <set-session-variable variableName="902Request" value="#[payload]" doc:name="Session Variable" />
+                <!--             <set-session-variable variableName="skuList" value="#[new org.json.JSONArray(message.outboundProperties.sku)]" mimeType="application/json" doc:name="Set SKU Session Variable" />
+     -->
+                <logger level="INFO" doc:name="Logger" />
+<!--                  <set-payload value="#[sessionVars.jsonPayload]" doc:name="Set Payload"/> -->
+                 <json:object-to-json-transformer doc:name="Object to JSON"/>
+                 <logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_901 : #[message.inboundProperties.lp_correlation_id]" />
+                 
+                <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.inittransaction.path}" method="POST" doc:name="HTTP - Call init Transaction" />
+                <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_902 : #[message.inboundProperties.lp_correlation_id]" />
+                 <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+                <set-payload value="#[sessionVars['902Request']]" mimeType="application/json" doc:name="Set Payload" />
+            </when>
+            <otherwise>
+                <logger message="No product details" level="INFO" doc:name="Logger" />
+            </otherwise>
+        </choice>
+<!--          <set-payload value="#[sessionVars.jsonPayload]" doc:name="Set Payload"/> -->
+         <json:object-to-json-transformer doc:name="Object to JSON"/>
+         <logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_901 : #[message.inboundProperties.lp_correlation_id]" />
+         
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.deductcostapay.path}" method="POST" doc:name="HTTP - Call process service deductcostapay" />
+       <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_902 : #[message.inboundProperties.lp_correlation_id]" />
+        <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p905:lp-api-config" processingStrategy="synchronous">
+        <logger level="INFO" doc:name="Logger" message="Entry : #[payload]" />
+         <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_905 : #[message.inboundProperties.lp_correlation_id]" />
+     
+       <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p905:lp-api-config" />
+            <add-message-property key="userId" value="#[payload.userId]" />
+            <add-message-property key="transactionCode" value="#[payload.transactionCode]" />
+            <add-message-property key="givexNumber" value="#[payload.givexNumber]" />
+            <add-message-property key="operationId" value="#[payload.operationId]" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+       <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+        <logger message="Before HTTP : #[payload]" level="INFO" doc:name="Logger" />
+        
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+<!--         <json:json-to-object-transformer doc:name="JSON to Object" returnClass="java.lang.String"/>  -->
+        <logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_905 : #[message.inboundProperties.lp_correlation_id]" />
+       
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.topUpCostaPay.path}" method="POST" doc:name="HTTP - Call process service topUpCostaPay">
+            <http:request-builder>
+                <http:header headerName="Content-Type" value="application/json" />
+            </http:request-builder>
+            <http:success-status-code-validator values="0..599" />
+        </http:request>
+        <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_905 : #[message.inboundProperties.lp_correlation_id]" />
+         <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p913:lp-api-config" processingStrategy="synchronous">
+        <logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+         <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_913 : #[message.inboundProperties.lp_correlation_id]" />
+     
+        <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p913:lp-api-config" />
+            <add-message-property key="userId" value="#[payload.userId]" />
+            <add-message-property key="transactionCode" value="#[payload.transactionCode]" />
+            <add-message-property key="givexNumber" value="#[payload.givexNumber]" />
+            <add-message-property key="operationId" value="#[payload.operationId]" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+        <logger message="Before HTTP : #[payload]" level="INFO" doc:name="Logger" />
+        
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_913 : #[message.inboundProperties.lp_correlation_id]" />
+        
+<!--         <json:json-to-object-transformer doc:name="JSON to Object" returnClass="java.lang.String"/>  -->
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.redemption.path}" method="POST" doc:name="HTTP - Call process service redemption">
+            <http:request-builder>
+                <http:header headerName="Content-Type" value="application/json" />
+            </http:request-builder>
+        </http:request>
+        <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_913 : #[message.inboundProperties.lp_correlation_id]" />
+         <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p930:lp-api-config" processingStrategy="synchronous">
+        <logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+         <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_930 : #[message.inboundProperties.lp_correlation_id]" />
+     
+       <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p930:lp-api-config" />
+            <add-message-property key="userId" value="#[payload.userId]" />
+            <add-message-property key="transactionCode" value="#[payload.transactionCode]" />
+            <add-message-property key="givexNumber" value="#[payload.givexNumber]" />
+            <add-message-property key="operationId" value="#[payload.operationId]" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+        <logger message="Before HTTP : #[payload]" level="INFO" doc:name="Logger" />
+        
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+<!--         <json:json-to-object-transformer doc:name="JSON to Object" returnClass="java.lang.String"/>  -->
+<logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_930 : #[message.inboundProperties.lp_correlation_id]" />
+
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.redemption.path}" method="POST" doc:name="HTTP - Call process service redemption">
+            <http:request-builder>
+                <http:header headerName="Content-Type" value="application/json" />
+            </http:request-builder>
+        </http:request>
+        <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_930 : #[message.inboundProperties.lp_correlation_id]" />
+         <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p904:lp-api-config" processingStrategy="synchronous">
+       <logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+        <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_904 : #[message.inboundProperties.lp_correlation_id]" />
+     
+<!--        <set-session-variable variableName="jsonPayload" value="#[payload]" doc:name="Session Variable"/> -->
+        <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p901:lp-api-config" />
+            <add-message-property key="userId" value="#[payload.userId]" />
+            <add-message-property key="password" value="#[payload.password]" />
+            <add-message-property key="operationId" value="#[payload.operationId]" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        <set-session-variable variableName="transactionCode" value="#[payload.transactionCode]" doc:name="Session Variable" />
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+
+        <logger level="INFO" doc:name="Logger" message="Payload: #[payload]"/>
+<!--         <set-payload value="#[sessionVars.jsonPayload]" doc:name="Set Payload"/> -->
+ <json:object-to-json-transformer doc:name="Object to JSON"/>       
+ <logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_904 : #[message.inboundProperties.lp_correlation_id]" />
+   
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.getAccount.path}" method="POST" doc:name="HTTP - Call get Account" />
+      <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_904 : #[message.inboundProperties.lp_correlation_id]" />
+      
+        <flow-ref name="common-logger-called-Sub_Flow" doc:name="common-logger-called-Sub_Flow" />
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+{
+	identifiers: payload.identifiers groupBy $.type.code 
+}]]></dw:set-payload>
+        </dw:transform-message>
+        <flow-ref name="common-logger-processing-Sub_Flow" doc:name="common-logger-processing-Sub_Flow" />
+        <choice doc:name="Choice">
+            <when expression="#[payload.identifiers.get(&quot;CC&quot;) != null &amp;&amp; payload.identifiers.get(&quot;CC&quot;).size() == 1]">
+                <dw:transform-message doc:name="Transform Message">
+                    <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+  "operationId":"904",
+  transactionCode: sessionVars.transactionCode, 
+      "cardISO": (payload.identifiers."CC".id reduce $$) when payload.identifiers."CC" != null otherwise "",
+   digitalCard: (payload.identifiers."CP".no reduce $$) when payload.identifiers."CP" != null otherwise ""
+}]]></dw:set-payload>
+                </dw:transform-message>
+                <flow-ref name="common-logger-calling-Sub_Flow" doc:name="common-logger-calling-Sub_Flow" />
+                <logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_904 : #[message.inboundProperties.lp_correlation_id]" />
+                
+                <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.blockIdentifier.path}" method="POST" doc:name="HTTP Call Block Identifier" />
+               <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_904 : #[message.inboundProperties.lp_correlation_id]" />
+                <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+                <flow-ref name="common-logger-called-Sub_Flow" doc:name="common-logger-called-Sub_Flow" />
+            </when>
+            <otherwise>
+                <flow-ref name="throw-plasticcard-exception" doc:name="throw-plasticcard-exception" />
+            </otherwise>
+        </choice>
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p916:lp-api-config">
+        <set-payload value="{  &quot;operationId&quot; : &quot;916&quot;,  &quot;transactionCode&quot; : &quot;2000405&quot;,  &quot;result&quot; : &quot;0&quot;,  &quot;operatorId&quot; : &quot;0.00&quot;,  &quot;terminalId&quot; : &quot;&quot;,    &quot;continuation&quot; : &quot;&quot;,    &quot;reportLine&quot; : &quot;&quot; }" doc:name="Set Payload" />
+    </flow>
+    <flow name="post:/poscalls/p917:lp-api-config">
+        <set-payload value="{  &quot;operationId&quot; : &quot;917&quot;,  &quot;transactionCode&quot; : &quot;2000405&quot;,  &quot;result&quot; : &quot;0&quot;,  &quot;operatorId&quot; : &quot;0.00&quot;,  &quot;terminalId&quot; : &quot;&quot;,    &quot;continuation&quot; : &quot;&quot;,    &quot;reportLine&quot; : &quot;&quot; }" doc:name="Set Payload" />
+    </flow>
+    <flow name="post:/poscalls/p918:lp-api-config" processingStrategy="synchronous">
+       <logger level="INFO" doc:name="Logger" message="Entry : #[payload]" />
+        <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_918 : #[message.inboundProperties.lp_correlation_id]" />
+     
+        <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p918:lp-api-config" />
+            <add-message-property key="userId" value="#[payload.userId]" />
+            <add-message-property key="transactionCode" value="#[payload.transactionCode]" />
+            <add-message-property key="givexNumber" value="#[payload.givexNumber]" />
+            <add-message-property key="operationId" value="#[payload.operationId]" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+        <logger message="Before HTTP : #[payload]" level="INFO" doc:name="Logger" />
+        
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+<!--         <json:json-to-object-transformer doc:name="JSON to Object" returnClass="java.lang.String"/>  -->
+<logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_918 : #[message.inboundProperties.lp_correlation_id]" />
+
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.canceltransaction.path}" method="POST" doc:name="HTTP - Call process service canceltransaction">
+            <http:request-builder>
+                <http:header headerName="Content-Type" value="application/json" />
+            </http:request-builder>
+            <http:success-status-code-validator values="0..599" />
+        </http:request>
+        <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_918 : #[message.inboundProperties.lp_correlation_id]" />
+         <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/p959:lp-api-config" processingStrategy="synchronous">
+        <logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+         <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_959 : #[message.inboundProperties.lp_correlation_id]" />
+     
+       <json:json-to-object-transformer doc:name="JSON to Object" returnClass="java.util.Map"/>
+         <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/p948:lp-api-config" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+        
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+<!--         <json:json-to-object-transformer doc:name="JSON to Object" returnClass="java.lang.String"/>  -->
+<logger level="INFO" doc:name="Display Correlation ID" message="Calling lp-process-services PROD_OUT_2_959 : #[message.inboundProperties.lp_correlation_id]" />
+
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.getAccount.path}" method="POST" doc:name="HTTP - Call process service get account" />
+       <logger level="INFO" doc:name="Display Correlation ID" message="Called lp-process-services PROD_OUT_3_959 : #[message.inboundProperties.lp_correlation_id]" />
+        <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+        <exception-strategy ref="lp-pos-api-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/poscalls/wm906s:lp-api-config" processingStrategy="synchronous">
+       <logger level="INFO" doc:name="Logger" message="Entry : #[payload]" />
+        <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_906 : #[message.inboundProperties.lp_correlation_id]" />
+     
+       <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <message-properties-transformer mimeType="application/json" doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+            <add-message-property key="flowName" value="post:/poscalls/wm906s:lp-api-config" />
+            <add-message-property key="userId" value="#[payload.userId]" />
+            <add-message-property key="transactionCode" value="#[payload.transactionCode]" />
+            <add-message-property key="givexNumber" value="#[payload.givexNumber]" />
+            <add-message-property key="operationId" value="#[payload.operationId]" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        <async doc:name="Async">
+            <flow-ref name="common-logger-audit-entry-Sub_Flow" doc:name="common-logger-audit-entry-Sub_Flow" />
+        </async>
+        <logger message="Before HTTP : #[payload]" level="INFO" doc:name="Logger" />
+        
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+<!--         <json:json-to-object-transformer doc:name="JSON to Object" returnClass="java.lang.String"/>  -->
+        <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.registerGiftCard.path}" method="POST" doc:name="HTTP - Call process service registerGiftCard">
+            <http:request-builder>
+                <http:header headerName="Content-Type" value="application/json" />
+            </http:request-builder>
+            <http:success-status-code-validator values="0..599" />
+        </http:request>
+         <set-property propertyName="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]" doc:name="lp_correlation_id"/>
+       
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+    <flow name="post:/sendgridCalls/webhookAPI:lp-api-config" processingStrategy="synchronous">
+      <logger level="INFO" doc:name="Logger" message="Entry : #[payload] " />
+       <logger level="INFO" doc:name="Display Correlation ID" message="Entered lp-api-services PROD_OUT_1_SendGrid : #[message.inboundProperties.lp_correlation_id]" />
+     
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-payload><![CDATA[%dw 1.0
+%input payload application/json
+%output application/java
+---
+{
+	events: payload groupBy $.event
+}]]></dw:set-payload>
+        </dw:transform-message>
+        <message-properties-transformer mimeType="application/json"  doc:name="Message Properties">
+            <add-message-property key="requestId" value="#[java.util.UUID.randomUUID().toString()]" />
+            <add-message-property key="channel" value="${x_channel}" />
+            <add-message-property key="program" value="${x_program}" />
+            <add-message-property key="clientId" value="${x_clientId}" />
+            <add-message-property key="clientSecret" value="${x_clientSecret}" />
+                <add-message-property key="lp_correlation_id" value="#[message.inboundProperties.lp_correlation_id]"/>
+            
+        </message-properties-transformer>
+        
+        <logger message="Before HTTP : #[message.payloadAs(java.lang.String)] and #[message]" level="INFO" doc:name="Logger" />
+        <set-session-variable variableName="response" value="#[new java.util.ArrayList()]" doc:name="Session Variable" />
+        <foreach collection="#[payload.events.entrySet()]" doc:name="For Each">
+            <logger message="Payload in for each : #[payload.key] and #[payload.value] and #[flowVars.rootMessage.getOutboundProperty(&quot;requestId&quot;)]" level="INFO" doc:name="Logger" />
+            <set-property propertyName="requestId" value="#[flowVars.rootMessage.getOutboundProperty(&quot;requestId&quot;)]" doc:name="Property"/>
+            <choice doc:name="Choice">
+                <when expression="#[payload.key.equalsIgnoreCase(&quot;Processed&quot;) || payload.key.equalsIgnoreCase(&quot;Dropped&quot;) || payload.key.equalsIgnoreCase(&quot;Delivered&quot;) || payload.key.equalsIgnoreCase(&quot;Deferred&quot;) || payload.key.equalsIgnoreCase(&quot;Bounce&quot;) || payload.key.equalsIgnoreCase(&quot;Spam Report&quot;)]">
+                    <logger message="In Processed : #[payload.value]" level="INFO" doc:name="Logger" />
+                    <set-payload value="#[payload.value]" mimeType="application/json" doc:name="Set Payload" />
+                    <json:object-to-json-transformer doc:name="Object to JSON" />
+                    <flow-ref name="common-logger-calling-Sub_Flow" doc:name="common-logger-calling-Sub_Flow" />
+                    <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.message.update.path}" method="POST" doc:name="HTTP - Call process service message update">
+                        <http:request-builder>
+                            <http:header headerName="Content-Type" value="application/json" />
+                        </http:request-builder>
+                    </http:request>
+                </when>
+                <when expression="#[payload.key.equalsIgnoreCase(&quot;Click&quot;)]">
+                    <logger message="In click : #[payload.value]" level="INFO" doc:name="Logger" />
+                    <set-payload value="#[payload.value]" mimeType="application/json" doc:name="Set Payload" />
+                    <json:object-to-json-transformer doc:name="Object to JSON" />
+                    <flow-ref name="common-logger-calling-Sub_Flow" doc:name="common-logger-calling-Sub_Flow" />
+                    <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.linkclick.path}" method="POST" doc:name="HTTP - Call process service Link click">
+                        <http:request-builder>
+                            <http:header headerName="Content-Type" value="application/json" />
+                        </http:request-builder>
+                    </http:request>
+                </when>
+                <when expression="#[payload.key.equalsIgnoreCase(&quot;Open&quot;)]">
+                    <logger message="In message open : #[payload.value]" level="INFO" doc:name="Logger" />
+                    <set-payload value="#[payload.value]" mimeType="application/json" doc:name="Set Payload" />
+                    <json:object-to-json-transformer doc:name="Object to JSON" />
+                    <flow-ref name="common-logger-calling-Sub_Flow" doc:name="common-logger-calling-Sub_Flow" />
+                    <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.message.open.path}" method="POST" doc:name="HTTP - Call process service Open">
+                        <http:request-builder>
+                            <http:header headerName="Content-Type" value="application/json" />
+                        </http:request-builder>
+                    </http:request>
+                </when>
+                <when expression="#[payload.key.equalsIgnoreCase(&quot;Unsubscribe&quot;)]">
+                    <logger message="In unsubscribe : #[payload.value]" level="INFO" doc:name="Logger" />
+                    <set-payload value="#[payload.value]" mimeType="application/json" doc:name="Set Payload" />
+                    <json:object-to-json-transformer doc:name="Object to JSON" />
+                    <flow-ref name="common-logger-calling-Sub_Flow" doc:name="common-logger-calling-Sub_Flow" />
+                    <http:request config-ref="HTTP_Process_Request_Configuration" path="${http.subscribe.path}" method="POST" doc:name="HTTP - Call process service Unsubscribe">
+                        <http:request-builder>
+                            <http:header headerName="Content-Type" value="application/json" />
+                        </http:request-builder>
+                    </http:request>
+                </when>
+                <otherwise>
+                    <logger level="INFO" doc:name="Logger" />
+                </otherwise>
+            </choice>
+        </foreach>
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	result : "0",
+	message: "SUCCESS"
+}]]></dw:set-payload>
+        </dw:transform-message>
+        <flow-ref name="common-logger-called-Sub_Flow" doc:name="common-logger-called-Sub_Flow" />
+        <exception-strategy ref="lp-common-serviceChoice_Exception_Strategy" doc:name="Reference Exception Strategy" />
+    </flow>
+   
+    <apikit:mapping-exception-strategy name="lp-pos-api-apiKitGlobalExceptionMapping">
+        <apikit:mapping statusCode="404">
+            <apikit:exception value="org.mule.module.apikit.exception.NotFoundException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
+            <set-payload value="{ &quot;message&quot;: &quot;Resource not found&quot; }" doc:name="Set Payload" />
+        </apikit:mapping>
+        <apikit:mapping statusCode="405">
+            <apikit:exception value="org.mule.module.apikit.exception.MethodNotAllowedException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
+            <set-payload value="{ &quot;message&quot;: &quot;Method not allowed&quot; }" doc:name="Set Payload" />
+        </apikit:mapping>
+        <apikit:mapping statusCode="415">
+            <apikit:exception value="org.mule.module.apikit.exception.UnsupportedMediaTypeException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
+            <set-payload value="{ &quot;message&quot;: &quot;Unsupported media type&quot; }" doc:name="Set Payload" />
+        </apikit:mapping>
+        <apikit:mapping statusCode="406">
+            <apikit:exception value="org.mule.module.apikit.exception.NotAcceptableException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
+            <set-payload value="{ &quot;message&quot;: &quot;Not acceptable&quot; }" doc:name="Set Payload" />
+        </apikit:mapping>
+        <apikit:mapping statusCode="400">
+            <apikit:exception value="org.mule.module.apikit.exception.BadRequestException" />
+            <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
+            <set-payload value="{ &quot;message&quot;: &quot;Bad request&quot; }" doc:name="Set Payload" />
+        </apikit:mapping>
+    </apikit:mapping-exception-strategy>
+</mule>

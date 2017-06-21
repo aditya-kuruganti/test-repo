@@ -1,0 +1,753 @@
+#%RAML 0.8
+title: Loyalty Programme APIs
+version: 1.0
+#baseUri: http://server/api/{version}
+baseUri: https://mocksvc.mulesoft.com/mocks/0fd9149c-e34d-448c-bb9b-823a94ac0286/api/{version}
+protocols: [HTTP,HTTPS]
+traits:
+  - client-id-required:
+       queryParameters:
+         client_id:
+           type: string
+           required: true
+         client_secret:
+           type: string
+           required: true
+/poscalls: 
+  /p928:
+    displayName: Verify POS Customer
+    description: Verify POS customer against Comarch
+    post: 
+      is: [client-id-required]  
+      description: Validates the customer against Comarch
+      body:
+        application/json:
+          schema: !include schemas/request/928_request_schema.json
+          example: !include examples/request/928_request_example.json
+      responses:
+          200:
+            body:  
+              application/json: 
+                schema: !include schemas/response/928_response_schema.json
+                example: !include examples/response/928_response_example.json
+          500:
+            body:
+              application/json:
+                example: |
+                  {
+                    {
+                  "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                  "response" : {
+                      "status" : "ERROR",
+                      "message" : "Exception occured while processing the request"
+                    }
+                  }                
+  /p909:
+    displayName: Balance Inquiry
+    description: The Balance service can be used to perform a card balance lookup
+    post: 
+      is: [client-id-required]  
+      description: The Balance service can be used to perform a card balance lookup
+      body:
+        application/json:
+          schema: !include schemas/request/909_request_schema.json
+          example: !include examples/request/909_request_example.json
+      responses:
+          200:
+            body:  
+              application/json: 
+                schema: !include schemas/response/909_response_schema.json
+                example: !include examples/response/909_response_example.json 
+          500:
+            body:
+              application/json:
+                example: |
+                  {
+                    {
+                  "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                  "response" : {
+                      "status" : "ERROR",
+                      "message" : "Exception occured while processing the request"
+                    }
+                  }
+  /p911:
+    displayName: Points Issuance
+    description: The Points Issuance service is used for issuing points as part of loyalty program
+    post: 
+      is: [client-id-required]  
+      description: The Points Issuance service is used for issuing points as part of loyalty program
+      body:
+        application/json:
+          schema: !include schemas/request/911_request_schema.json
+          example: !include examples/request/911_request_example.json
+      responses:
+          200:
+            body:  
+              application/json: 
+                schema: !include schemas/response/911_response_schema.json
+                example: !include examples/response/911_response_example.json
+          500:
+            body:
+              application/json:
+                example: |
+                  {
+                    {
+                  "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                  "response" : {
+                      "status" : "ERROR",
+                      "message" : "Exception occured while processing the request"
+                    }
+                  } 
+  /p912:
+    displayName: Redeem Points
+    description: The Points redemption service is used for redeeming (decrementing) points as part of a loyalty program.
+    post: 
+      is: [client-id-required]  
+      description: The Points redemption service is used for redeeming (decrementing) points as part of a loyalty program.
+      body:
+        application/json:
+          schema: !include schemas/request/912_request_schema.json
+          example: !include examples/request/912_request_example.json
+      responses:
+          200:
+            body:  
+              application/json: 
+                schema: !include schemas/response/912_response_schema.json
+                example: !include examples/response/912_response_example.json
+          500:
+            body:
+              application/json:
+                example: |
+                  {
+                    {
+                  "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                  "response" : {
+                      "status" : "ERROR",
+                      "message" : "Exception occured while processing the request"
+                    }
+                  } 
+  /p902:
+    displayName: Forced redemption
+    description: Forced redemption will force the successful redemption of the remaining balance of a Gift Card if the balance is less than the transaction amount that is attempted.
+    post: 
+      is: [client-id-required]  
+      description: Forced redemption will force the successful redemption of the remaining balance of a Gift Card if the balance is less than the transaction amount that is attempted.
+      body:
+        application/json:
+          schema: !include schemas/request/902_request_schema.json
+          example: !include examples/request/902_request_example.json
+      responses:
+          200:
+            body:  
+              application/json: 
+                schema: !include schemas/response/902_response_schema.json
+                example: !include examples/response/902_response_example.json
+          500:
+            body:
+              application/json:
+                example: |
+                  {
+                    {
+                  "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                  "response" : {
+                      "status" : "ERROR",
+                      "message" : "Exception occured while processing the request"
+                    }
+                  } 
+  /p904:
+    displayName: Register
+    description: The Register service enables a merchant to request and receive a Givexnumber to which a value can be assigned
+    post: 
+      is: [client-id-required]  
+      description: The Register service enables a merchant to request and receive a Givexnumber to which a value can be assigned
+      body:
+        application/json:
+          schema: !include schemas/request/904_request_schema.json
+          example: !include examples/request/904_request_example.json
+      responses:
+          200:
+            body:  
+              application/json: 
+                schema: !include schemas/response/904_response_schema.json
+                example: !include examples/response/904_response_example.json
+          500:
+            body:
+              application/json:
+                example: |
+                  {
+                    {
+                  "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                  "response" : {
+                      "status" : "ERROR",
+                      "message" : "Exception occured while processing the request"
+                    }
+                  } 
+  /p905:
+    displayName: Increment
+    description: This service enables a merchant to add value to a certificate.
+    post: 
+      is: [client-id-required]  
+      description: This service enables a merchant to add value to a certificate.
+      body:
+        application/json:
+          schema: !include schemas/request/905_request_schema.json
+          example: !include examples/request/905_request_example.json
+      responses:
+          200:
+            body:  
+              application/json: 
+                schema: !include schemas/response/905_response_schema.json
+                example: !include examples/response/905_response_example.json
+          500:
+            body:
+              application/json:
+                example: |
+                  {
+                    {
+                  "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                  "response" : {
+                      "status" : "ERROR",
+                      "message" : "Exception occured while processing the request"
+                    }
+                  } 
+  /p906:
+    displayName: Activate
+    description: This service enables a merchant to activate a Givex certificate for a certain value once it has been sold.
+    post: 
+      is: [client-id-required]  
+      description: This service enables a merchant to activate a Givex certificate for a certain value once it has been sold.
+      body:
+        application/json:
+          schema: !include schemas/request/906_request_schema.json
+          example: !include examples/request/906_request_example.json
+      responses:
+          200:
+            body:  
+              application/json: 
+                schema: !include schemas/response/906_response_schema.json
+                example: !include examples/response/906_response_example.json
+          500:
+            body:
+              application/json:
+                example: |
+                  {
+                    {
+                  "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                  "response" : {
+                      "status" : "ERROR",
+                      "message" : "Exception occured while processing the request"
+                    }
+                  } 
+  /p907:
+    displayName: Cancel
+    description: The Cancel service enables the merchant to void or cancel a Givex transaction.
+    post: 
+      is: [client-id-required]  
+      description: The Cancel service enables the merchant to void or cancel a Givex transaction.
+      body:
+        application/json:
+          schema: !include schemas/request/907_request_schema.json
+          example: !include examples/request/907_request_example.json
+      responses:
+          200:
+            body:  
+              application/json: 
+                schema: !include schemas/response/907_response_schema.json
+                example: !include examples/response/907_response_example.json
+          500:
+            body:
+              application/json:
+                example: |
+                  {
+                    {
+                  "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                  "response" : {
+                      "status" : "ERROR",
+                      "message" : "Exception occured while processing the request"
+                    }
+                  }
+  /p910:
+    displayName: Balance Transfer
+    description: The Balance Transfer service is used for transferring the available monetary and points balance from one Givex card to another
+    post: 
+      is: [client-id-required]  
+      description: The Balance Transfer service is used for transferring the available monetary and points balance from one Givex card to another
+      body:
+        application/json:
+          schema: !include schemas/request/910_request_schema.json
+          example: !include examples/request/910_request_example.json
+      responses:
+          200:
+            body:  
+              application/json: 
+                schema: !include schemas/response/910_response_schema.json
+                example: !include examples/response/910_response_example.json
+          500:
+            body:
+              application/json:
+                example: |
+                  {
+                    {
+                  "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                  "response" : {
+                      "status" : "ERROR",
+                      "message" : "Exception occured while processing the request"
+                    }
+                  }  
+  /p913:
+    displayName: Points cancel
+    description: This service is used for cancelling a Points transaction
+    post: 
+      is: [client-id-required]  
+      description: This service is used for cancelling a Points transaction
+      body:
+        application/json:
+          schema: !include schemas/request/913_request_schema.json
+          example: !include examples/request/913_request_example.json
+      responses:
+          200:
+            body:  
+              application/json: 
+                schema: !include schemas/response/913_response_schema.json
+                example: !include examples/response/913_response_example.json
+          500:
+            body:
+              application/json:
+                example: |
+                  {
+                    {
+                  "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                  "response" : {
+                      "status" : "ERROR",
+                      "message" : "Exception occured while processing the request"
+                    }
+                  } 
+  /p915:
+    displayName: Cash out
+    description: This is a batch close operation that affects all operators and terminals within the store. The service will also clear any Pre-Auth transactions that|
+                 have not been posted with the Post-Auth service. The transactions are |
+                 either cancelled or posted depending on merchant settings.
+    post: 
+      is: [client-id-required]  
+      description: This is a batch close operation that affects all operators and terminals within the store. The service will also clear any Pre-Auth transactions that|
+                 have not been posted with the Post-Auth service. The transactions are |
+                 either cancelled or posted depending on merchant settings.
+      body:
+        application/json:
+          schema: !include schemas/request/915_request_schema.json
+          example: !include examples/request/915_request_example.json
+      responses:
+          200:
+            body:  
+              application/json: 
+                schema: !include schemas/response/915_response_schema.json
+                example: !include examples/response/915_response_example.json
+          500:
+            body:
+              application/json:
+                example: |
+                  {
+                    {
+                  "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                  "response" : {
+                      "status" : "ERROR",
+                      "message" : "Exception occured while processing the request"
+                    }
+                  } 
+  /p916:
+    displayName: Report
+    description: This service can be used to request a brief summary report of the type, number, and value of transactions performed for a user id/operator id combination
+    post: 
+      is: [client-id-required]  
+      description: This service can be used to request a brief summary report of the type, number, and value of transactions performed for a user id/operator id combination
+      body:
+        application/json:
+          schema: !include schemas/request/916_request_schema.json
+          example: !include examples/request/916_request_example.json
+      responses:
+          200:
+            body:  
+              application/json: 
+                schema: !include schemas/response/916_response_schema.json
+                example: !include examples/response/916_response_example.json
+          500:
+            body:
+              application/json:
+                example: |
+                  {
+                    {
+                  "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                  "response" : {
+                      "status" : "ERROR",
+                      "message" : "Exception occured while processing the request"
+                    }
+                  }   
+  /p917:
+    displayName: Report continuation
+    description: This function requests the next packet of a report started with the "916/E" service
+    post: 
+      is: [client-id-required]  
+      description: This function requests the next packet of a report started with the "916/E" service
+      body:
+        application/json:
+          schema: !include schemas/request/917_request_schema.json
+          example: !include examples/request/917_request_example.json
+      responses:
+          200:
+            body:  
+              application/json: 
+                schema: !include schemas/response/917_response_schema.json
+                example: !include examples/response/917_response_example.json
+          500:
+            body:
+              application/json:
+                example: |
+                  {
+                    {
+                  "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                  "response" : {
+                      "status" : "ERROR",
+                      "message" : "Exception occured while processing the request"
+                    }
+                  }
+  /p918:
+    displayName: Reversal
+    description: The Reversal service is similar to the Cancel but enables the merchant to roll back a Givex transaction using the transaction code from the original transaction.
+    post: 
+      is: [client-id-required]  
+      description: The Reversal service is similar to the Cancel but enables the merchant to roll back a Givex transaction using the transaction code from the original transaction.
+      body:
+        application/json:
+          schema: !include schemas/request/918_request_schema.json
+          example: !include examples/request/918_request_example.json
+      responses:
+          200:
+            body:  
+              application/json: 
+                schema: !include schemas/response/918_response_schema.json
+                example: !include examples/response/918_response_example.json
+          500:
+            body:
+              application/json:
+                example: |
+                  {
+                    {
+                  "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                  "response" : {
+                      "status" : "ERROR",
+                      "message" : "Exception occured while processing the request"
+                    }
+                  }  
+  /p908:
+    displayName: Adjustment
+    description: This service enables a merchant to adjust (increment or decrement) the value of an existing certificate. Adjustment transactions cannot be cancelled.
+    post: 
+      is: [client-id-required]  
+      description: This service enables a merchant to adjust (increment or decrement) the value of an existing certificate. Adjustment transactions cannot be cancelled.
+      body:
+        application/json:
+          schema: !include schemas/request/908_request_schema.json
+          example: !include examples/request/908_request_example.json
+      responses:
+          200:
+            body:  
+              application/json: 
+                schema: !include schemas/response/908_response_schema.json
+                example: !include examples/response/908_response_example.json
+          500:
+            body:
+              application/json:
+                example: |
+                  {
+                    {
+                  "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                  "response" : {
+                      "status" : "ERROR",
+                      "message" : "Exception occured while processing the request"
+                    }
+                  }                  
+  /p930:
+    displayName: Points reversal
+    description: The Points reversal service is similar to the Points cancel but enables the merchant to roll back a Givex points transaction using the transaction code from the original transaction.
+    post: 
+      is: [client-id-required]  
+      description: The Points reversal service is similar to the Points cancel but enables the merchant to roll back a Givex points transaction using the transaction code from the original transaction.
+      body:
+        application/json:
+          schema: !include schemas/request/930_request_schema.json
+          example: !include examples/request/930_request_example.json
+      responses:
+          200:
+            body:  
+              application/json: 
+                schema: !include schemas/response/930_response_schema.json
+                example: !include examples/response/930_response_example.json
+          500:
+            body:
+              application/json:
+                example: |
+                  {
+                    {
+                  "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                  "response" : {
+                      "status" : "ERROR",
+                      "message" : "Exception occured while processing the request"
+                    }
+                  }  
+  /p901:
+    displayName: Secure redemption
+    description: The Secure redemption service enables a merchant to redeem (decrement) all or part of the value of an existing certificate
+    post: 
+      is: [client-id-required]  
+      description: The Secure redemption service enables a merchant to redeem (decrement) all or part of the value of an existing certificate
+      body:
+        application/json:
+          schema: !include schemas/request/901_request_schema.json
+          example: !include examples/request/901_request_example.json
+      responses:
+          200:
+            body:  
+              application/json: 
+                schema: !include schemas/response/901_response_schema.json
+                example: !include examples/response/901_response_example.json
+          500:
+            body:
+              application/json:
+                example: |
+                  {
+                    {
+                  "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                  "response" : {
+                      "status" : "ERROR",
+                      "message" : "Exception occured while processing the request"
+                    }
+                  }
+  /p946:
+    displayName: CWS New Account
+    description: This service enables a merchant to create a cws customer account
+    post: 
+      is: [client-id-required]  
+      description: This service enables a merchant to create a cws customer account
+      body:
+        application/json:
+          schema: !include schemas/request/946_request_schema.json
+          example: !include examples/request/946_request_example.json
+      responses:
+          200:
+            body:  
+              application/json: 
+                schema: !include schemas/response/946_response_schema.json
+                example: !include examples/response/946_response_example.json
+          500:
+            body:
+              application/json:
+                example: |
+                  {
+                    {
+                  "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                  "response" : {
+                      "status" : "ERROR",
+                      "message" : "Exception occured while processing the request"
+                    }
+                  } 
+  /p947:
+    displayName: CWS Update Account
+    description: CWS Update Account will only update the customer’s address or contact info
+    post: 
+      is: [client-id-required]  
+      description: CWS Update Account will only update the customer’s address or contact info
+      body:
+        application/json:
+          schema: !include schemas/request/947_request_schema.json
+          example: !include examples/request/947_request_example.json
+      responses:
+          200:
+            body:  
+              application/json: 
+                schema: !include schemas/response/947_response_schema.json
+                example: !include examples/response/947_response_example.json
+          500:
+            body:
+              application/json:
+                example: |
+                  {
+                    {
+                  "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                  "response" : {
+                      "status" : "ERROR",
+                      "message" : "Exception occured while processing the request"
+                    }
+                  } 
+  /p948:
+    displayName: CWS Account Card List
+    description: This service enables a merchant to get a list of cards that are associated to a
+                 customer’s account
+    post: 
+      is: [client-id-required]  
+      description: This service enables a merchant to get a list of cards that are associated to a
+                   customer’s account
+      body:
+        application/json:
+          schema: !include schemas/request/948_request_schema.json
+          example: !include examples/request/948_request_example.json
+      responses:
+          200:
+            body:  
+              application/json: 
+                schema: !include schemas/response/948_response_schema.json
+                example: !include examples/response/948_response_example.json
+          500:
+            body:
+              application/json:
+                example: |
+                  {
+                    {
+                  "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                  "response" : {
+                      "status" : "ERROR",
+                      "message" : "Exception occured while processing the request"
+                    }
+                  } 
+  
+  
+  /p951:
+      displayName: CWS Add Card
+      description: This service enables a merchant to add a gift card to an existing customer account
+      post:
+        is: [client-id-required]
+        description: Validates the customer against Comarch
+        body:
+          application/json:
+            schema: !include schemas/request/951_request_schema.json
+            example: !include examples/request/951_request_example.json
+        responses:
+            200:
+              body:
+                application/json:
+                  schema: !include schemas/response/951_response_schema.json
+                  example: !include examples/response/951_response_example.json
+            500:
+              body:
+                application/json:
+                  example: |
+                    {
+                      {
+                    "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                    "response" : {
+                        "status" : "ERROR",
+                        "message" : "Exception occured while processing the request"
+                      }
+                    }
+  /p952:
+          displayName: CWS Remove Card
+          description: This service enables a merchant to remove a gift card from an existing customer account
+          post:
+            is: [client-id-required]
+            description: Validates the customer against Comarch
+            body:
+              application/json:
+                schema: !include schemas/request/952_request_schema.json
+                example: !include examples/request/952_request_example.json
+            responses:
+                200:
+                  body:
+                    application/json:
+                      schema: !include schemas/response/952_response_schema.json
+                      example: !include examples/response/952_response_example.json
+                500:
+                  body:
+                    application/json:
+                      example: |
+                        {
+                          {
+                        "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                        "response" : {
+                            "status" : "ERROR",
+                            "message" : "Exception occured while processing the request"
+                          }
+                        }
+  /p953:
+          displayName: CWS Update Password
+          description: This service enables a merchant to update a customer account password
+          post:
+            is: [client-id-required]
+            description: Validates the customer against Comarch
+            body:
+              application/json:
+                schema: !include schemas/request/953_request_schema.json
+                example: !include examples/request/953_request_example.json
+            responses:
+                200:
+                  body:
+                    application/json:
+                      schema: !include schemas/response/953_response_schema.json
+                      example: !include examples/response/953_response_example.json
+                500:
+                  body:
+                    application/json:
+                      example: |
+                        {
+                          {
+                        "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                        "response" : {
+                            "status" : "ERROR",
+                            "message" : "Exception occured while processing the request"
+                          }
+                        }
+  /p954:
+          displayName: CWS Reset Password
+          description: This service enables a merchant to update a customer account password
+          post:
+            is: [client-id-required]
+            description: Validates the customer against Comarch
+            body:
+              application/json:
+                schema: !include schemas/request/954_request_schema.json
+                example: !include examples/request/954_request_example.json
+            responses:
+                200:
+                  body:
+                    application/json:
+                      schema: !include schemas/response/954_response_schema.json
+                      example: !include examples/response/954_response_example.json
+                500:
+                  body:
+                    application/json:
+                      example: |
+                        {
+                          {
+                        "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                        "response" : {
+                            "status" : "ERROR",
+                            "message" : "Exception occured while processing the request"
+                          }
+                        }
+  /p958:
+          displayName: CWS Verify Login
+          description: This service enables a merchant to verify the login and password of a CWS customer
+          post:
+            is: [client-id-required]
+            description: Validates the customer against Comarch
+            body:
+              application/json:
+                schema: !include schemas/request/958_request_schema.json
+                example: !include examples/request/958_request_example.json
+            responses:
+                200:
+                  body:
+                    application/json:
+                      schema: !include schemas/response/958_response_schema.json
+                      example: !include examples/response/958_response_example.json
+                500:
+                  body:
+                    application/json:
+                      example: |
+                        {
+                          {
+                        "messageId" : "183c9d70-20f9-11e6-8b4b-34e6d722bd8d",
+                        "response" : {
+                            "status" : "ERROR",
+                            "message" : "Exception occured while processing the request"
+                          }
+                        }
+                                                                                                                       

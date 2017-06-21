@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit"
+	xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns:secure-property-placeholder="http://www.mulesoft.org/schema/mule/secure-property-placeholder" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:inspect="http://www.mulesoft.org/schema/mule/inspect"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd
+http://www.mulesoft.org/schema/mule/inspect http://www.mulesoft.org/schema/mule/inspect/current/mule-inspect.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/secure-property-placeholder http://www.mulesoft.org/schema/mule/secure-property-placeholder/current/mule-secure-property-placeholder.xsd">
+  <secure-property-placeholder:config name="Secure_Property_Placeholder" key="${CostaAPIKey}" location="esb-common-logging.properties,lp-pos-${env}-properties.properties" doc:name="Secure Property Placeholder"/>
+    <http:listener-config name="lp-api-httpListenerConfig" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration" />
+    <apikit:config name="lp-api-config" raml="lp-api.raml" consoleEnabled="true" consolePath="console" doc:name="Router" />
+    
+    <ee:object-store-caching-strategy name="Migration_Caching_Strategy" keyGenerationExpression="#[message.outboundProperties.userId]" doc:name="Caching Strategy">
+        <in-memory-store name="candidateData" />
+    </ee:object-store-caching-strategy>
+   
+    <http:request-config name="HTTP_Process_Request_Configuration" host="${http.cloudhub.host}" port="${http.cloudhub.port}" basePath="${http.basepath}" doc:name="HTTP Request Configuration" protocol="HTTPS" responseTimeout="60000">
+    </http:request-config>
+ <spring:beans>
+ <spring:import resource="classpath:lp-common-service.xml"></spring:import>
+
+        
+        <spring:bean id="Bean" name="Bean" class="org.apache.commons.dbcp2.BasicDataSource">
+            <spring:property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
+            <spring:property name="url" value="${db_url}" />
+            <spring:property name="username" value="${db_user}" />
+            <spring:property name="password" value="${db_password}" />
+ 			<spring:property name="initialSize" value="${db_pool_initialsize}" />
+			<spring:property name="maxTotal" value="${db_pool_maxTotal}" />
+			<spring:property name="maxIdle" value="${db_pool_maxIdle}" />
+			<spring:property name="maxWaitMillis" value="${db_pool_maxWaitMillis}" />
+			<spring:property name="testWhileIdle" value="${db_pool_testWhileIdle}" />
+			<spring:property name="timeBetweenEvictionRunsMillis" value="${db_pool_timeBetweenEvictionRunsMillis}" />
+			<spring:property name="softMinEvictableIdleTimeMillis" value="${db_pool_softMinEvictableIdleTimeMillis}" />
+			<spring:property name="removeAbandonedOnMaintenance" value="${db_pool_removeAbandonedOnMaintenance}" />
+        </spring:bean> 
+</spring:beans>
+  
+ <ee:object-store-caching-strategy name="Token_Caching_Strategy" keyGenerationExpression="#[json:username]" doc:name="Caching Strategy">
+        <in-memory-store name="StoreAccessToken"/>
+    </ee:object-store-caching-strategy>
+<choice-exception-strategy name="lp-common-serviceChoice_Exception_Strategy">
+        <catch-exception-strategy doc:name="common-loggerCatch_Exception_Strategy">
+            <set-property propertyName="http.status" value="#[500]" doc:name="Property"/>
+            <dw:transform-message doc:name="Transform Message">
+                <dw:set-payload><![CDATA[%dw 1.0
+%input payload application/json
+%output application/json
+---
+
+payload
+]]></dw:set-payload>
+            </dw:transform-message>
+
+            <logger message="ERROR &gt;&gt; #[app.name] : Flow: #[flow.name] Exception Message:" level="ERROR" category="com.costa.retail" doc:name="Logger"/>
+            
+    </catch-exception-strategy> 
+    </choice-exception-strategy>    
+    
+     <sub-flow name="throw-plasticcard-exception">
+        <set-property propertyName="http.status" value="#[500]" doc:name="Property"/>
+        <set-payload value="{&quot;code&quot;:&quot;INVALID_CARD_COUNT&quot;,&quot;message&quot;:&quot;Count of Plastic Cards is more than One  : #[payload.identifiers.get(&quot;CC&quot;).size()]&quot;}" mimeType="application/json" doc:name="Set Payload"/>
+        <logger message="ERROR &gt;&gt; #[app.name] : Flow: #[flow.name] Exception Message:" level="ERROR" category="com.costa.retail" doc:name="Logger"/>
+
+    </sub-flow> 
+</mule>

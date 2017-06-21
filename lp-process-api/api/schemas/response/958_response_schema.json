@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "operationId": {
+      "type": "string"
+    },
+    "transactionCode": {
+      "type": "string"
+    },
+    "result": {
+      "type": "string"
+    },
+    "loginResultCode": {
+      "type": "string"
+    },
+    "errorMessage": {
+      "type": "null"
+    }
+  },
+  "required": [
+    "operationId",
+    "transactionCode",
+    "result",
+    "loginResultCode",
+    "errorMessage"
+  ]
+}
