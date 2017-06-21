@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "operationId": {
+      "type": "string"
+    },
+    "transactionCode": {
+      "type": "string"
+    },
+    "result": {
+      "type": "string"
+    },
+    "customerId": {
+      "type": "string"
+    },
+    "errorMessage": {
+      "type": "string"
+    },
+    "customerTitle": {
+      "type": "string"
+    },
+    "customerFirstName": {
+      "type": "string"
+    },
+    "customerMiddleName": {
+      "type": "string"
+    },
+    "customerLastName": {
+      "type": "string"
+    },
+    "customerGender": {
+      "type": "string"
+    },
+    "customerBirthdate": {
+      "type": "string"
+    },
+    "customerAddress": {
+      "type": "string"
+    },
+    "customerCity": {
+      "type": "string"
+    },
+    "customerProvince": {
+      "type": "string"
+    },
+    "customerCounty": {
+      "type": "string"
+    },
+    "customerCountry": {
+      "type": "string"
+    },
+    "customerPostalCode": {
+      "type": "string"
+    },
+    "customerEmail": {
+      "type": "string"
+    },
+    "customerPhone": {
+      "type": "string"
+    },
+    "customerDiscount": {
+      "type": "string"
+    },
+    "promotionOptIn": {
+      "type": "string"
+    },
+    "customerMobile": {
+      "type": "string"
+    },
+    "customerCompany": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "operationId",
+    "transactionCode",
+    "result",
+    "customerId",
+    "errorMessage",
+    "customerTitle",
+    "customerFirstName",
+    "customerMiddleName",
+    "customerLastName",
+    "customerGender",
+    "customerBirthdate",
+    "customerAddress",
+    "customerCity",
+    "customerProvince",
+    "customerCounty",
+    "customerCountry",
+    "customerPostalCode",
+    "customerEmail",
+    "customerPhone",
+    "customerDiscount",
+    "promotionOptIn",
+    "customerMobile",
+    "customerCompany"
+  ]
+}

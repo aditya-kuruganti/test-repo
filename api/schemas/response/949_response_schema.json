@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "operationId": {
+      "type": "string"
+    },
+    "transactionCode": {
+      "type": "string"
+    },
+    "result": {
+      "type": "string"
+    },
+    "customerId": {
+      "type": "string"
+    },
+    "errorMessage": {
+      "type": "string"
+    },
+    "customerFirstName": {
+      "type": "string"
+    },
+    "customerLastName": {
+      "type": "string"
+    },
+    "cardISO": {
+      "type": "string"
+    },
+    "serialNumber": {
+      "type": "string"
+    },
+    "lostDate": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "operationId",
+    "transactionCode",
+    "result",
+    "customerId",
+    "errorMessage",
+    "customerFirstName",
+    "customerLastName",
+    "cardISO",
+    "serialNumber",
+    "lostDate"
+  ]
+}

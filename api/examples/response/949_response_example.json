@@ -1,0 +1,12 @@
+{
+  "operationId": "949",
+  "transactionCode": "69",
+  "result": "0",
+  "customerId": "",
+  "errorMessage": "null",
+  "customerFirstName": "koteswararao",
+  "customerLastName": "sunkavalli",
+  "cardISO": "",
+  "serialNumber" : "1234",
+  "lostDate" : "21-12-2014"
+}

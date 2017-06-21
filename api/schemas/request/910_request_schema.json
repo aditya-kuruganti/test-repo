@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "operationId": {
+      "type": "string"
+    },
+    "languageCode": {
+      "type": "string"
+    },
+    "transactionCode": {
+      "type": "string"
+    },
+    "userId": {
+      "type": "string"
+    },
+    "password": {
+      "type": "string"
+    },
+    "givexNumberTicketFrom": {
+      "type": "string"
+    },
+    "givexNumberTicketTo": {
+      "type": "string"
+    },
+    "securityCode": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "operationId",
+    "languageCode",
+    "transactionCode",
+    "password",
+    "givexNumberTicketFrom",
+    "givexNumberTicketTo"
+  ]
+}

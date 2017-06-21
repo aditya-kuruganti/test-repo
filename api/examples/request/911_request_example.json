@@ -1,0 +1,15 @@
+{
+	"operationId" : "911",
+	"languageCode" : "0",
+	"transactionCode" : "2000405",
+	"userId" : "171052",
+	"password" : "9121",
+	"givexNumber" : "6337807487510000000022",
+	"amount" : "123.45",
+	"units" : "234",
+	"promoCode" : "123",
+	"sku" : "123.45",
+	"bonusPoints" : "234",
+	"customerLogin" : "10111",
+  	"customerPassword" : "xxxx"
+}

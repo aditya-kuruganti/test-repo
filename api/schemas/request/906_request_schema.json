@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "operationId": {
+      "type": "string"
+    },
+    "languageCode": {
+      "type": "string"
+    },
+    "transactionCode": {
+      "type": "string"
+    },
+    "userId": {
+      "type": "string"
+    },
+    "password": {
+      "type": "string"
+    },
+    "givexNumber": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "string"
+    },
+    "securityCode": {
+      "type": "string"
+    },
+    "totalCheckAmount": {
+      "type": "string"
+    },
+    "governmentId": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "operationId",
+    "languageCode",
+    "transactionCode",
+    "userId",
+    "password",
+    "givexNumber",
+    "amount"
+  ]
+}

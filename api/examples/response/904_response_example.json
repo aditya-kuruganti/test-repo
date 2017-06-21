@@ -1,0 +1,10 @@
+{
+	"operationId" : "904",
+	"transactionCode" : "2000405",
+	"result" : "0",
+	"givexTransactionReference" : "0.00",
+	"givexNumber" : "6337801234528219529",
+  	"certificateBalance" : "12.45",
+  	"certificateExpirationDate" : "",
+  	"receiptMessage" : ""
+}

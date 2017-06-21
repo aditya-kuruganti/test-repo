@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "operationId": {
+      "type": "string"
+    },
+    "languageCode": {
+      "type": "string"
+    },
+    "transactionCode": {
+      "type": "string"
+    },
+    "userId": {
+      "type": "string"
+    },
+    "givexNumber": {
+      "type": "string"
+    },
+    "securityCode": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "operationId",
+    "languageCode",
+    "transactionCode",
+    "userId",
+    "givexNumber"
+  ]
+}

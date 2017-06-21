@@ -1,0 +1,10 @@
+{
+  "operationId": "954",
+  "transactionCode": "2000405",
+  "result": "0",
+  "customerId": "12345",
+  "errorMessage": null,
+  "customerFirstName": "Prashant",
+  "customerLastName": "K",
+  "customerEmail": "user123@COSTA.UK"
+}

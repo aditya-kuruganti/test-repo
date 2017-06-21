@@ -1,0 +1,9 @@
+{
+  "operationId": "958",
+  "transactionCode": "2000405",
+  "result": "0",
+  "loginResultCode": "12345",
+  "errorMessage": null,
+  "forcePasswordChangeFlag" : "0",
+  "loginToken" : ""
+}

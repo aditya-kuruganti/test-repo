@@ -1,0 +1,10 @@
+{
+  "operationId": "952",
+  "transactionCode": "2000405",
+  "result": "0",
+  "customerId": "12345",
+  "errorMessage": null,
+  "customerFirstName": "Prashanth",
+  "customerLastName": "C",
+  "cardList": []
+}
